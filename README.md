@@ -4,10 +4,10 @@
 This project use to cut images,which you can create a python object to finish it.You also can set cut size by change parameter "CUT_WIDTH" and "CUT_HEIGHT".
 
 ## 步骤 Step
-###1.创建对象
-###1.create a CutImage object.
-###2.使用begin函数
-###2.use CutImage.begin().
+### 1.创建对象
+### 1.create a CutImage object.
+### 2.使用begin函数
+### 2.use CutImage.begin().
 
 ## 例子 Example
 你可以打开"test.py"文件
