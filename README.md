@@ -4,8 +4,8 @@
 
 ## 步骤 Step
 ### 1.安装pillow库
-### 2.创建对象
-### 3.使用begin函数
+### 2.创建CutImage对象
+### 3.使用CutImage.begin函数
 
 ## 例子 Example
 你可以打开"test.py"文件
