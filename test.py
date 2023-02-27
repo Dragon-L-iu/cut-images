@@ -1,15 +1,32 @@
-from CutImages import CutImage
+from CutImages import CutImage, Model
 
 # 要裁剪的文件夹
-IMAGE_ROOT = "F:\photo\\"
+IMAGE_ROOT = "F:\photo\\images\\"
+LABEL_ROOT = "F:\photo\\labels\\"
 # 裁剪结果把保存的文件目录
-SAVE_PATH = "F:\photo\\result"
+SAVE_PATH = "F:\photo\\images\\result"
+SAVE_LABEL_PATH = "F:\photo\\labels\\result"
 # 裁剪的图像宽度
 CUT_WIDTH = 200
 # 裁剪的图像高度
 CUT_HEIGHT = 300
 
-# 创建一个CutImage对象，传入裁剪文件夹、裁剪宽度，裁剪高度
-cutimage = CutImage(IMAGE_ROOT, CUT_WIDTH, CUT_HEIGHT)
-# 调用begin 传入保存路径开始裁剪,model参数用来控制
-cutimage.begin(model="cut", random_count=5, save_path=SAVE_PATH)
+
+def callback(filename: str):
+    name = filename.split(".")
+    return name[0] + "_label." + name[1]
+
+
+# 创建一个CutImage对象
+cutimage = CutImage()
+cutimage.set_image_root(IMAGE_ROOT)
+cutimage.set_cut_width(CUT_WIDTH)
+cutimage.set_cut_height(CUT_HEIGHT)
+cutimage.set_save_path(SAVE_PATH)
+cutimage.set_label_save_path(SAVE_LABEL_PATH)
+cutimage.set_label_root(LABEL_ROOT)
+
+cutimage.set_callback(callback)
+# 调用begin model参数用来控制裁剪方式
+# cutimage.begin(model=Model.CUT, random_count=5)
+cutimage.begin(model=Model.RANDOM_CUT, random_count=5)
