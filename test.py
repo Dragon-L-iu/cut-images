@@ -9,7 +9,7 @@ SAVE_LABEL_PATH = "F:\photo\\labels\\result"
 # 裁剪的图像宽度
 CUT_WIDTH = 200
 # 裁剪的图像高度
-CUT_HEIGHT = 300
+CUT_HEIGHT = 200
 
 
 def callback(filename: str):
@@ -29,4 +29,4 @@ cutimage.set_label_root(LABEL_ROOT)
 cutimage.set_callback(callback)
 # 调用begin model参数用来控制裁剪方式
 # cutimage.begin(model=Model.CUT, random_count=5)
-cutimage.begin(model=Model.RANDOM_CUT, random_count=5)
+cutimage.begin(model=Model.BLUR, random_count=5)

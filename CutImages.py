@@ -9,6 +9,7 @@ class Model:
     CUT = 1
     RANDOM_CUT = 2
     ROTATE = 3
+    BLUR = 4
 
 
 class CutImage:
@@ -50,9 +51,9 @@ class CutImage:
         """
         return img.crop((base_x, base_y, base_x + self.__CUT_WIDTH, base_y + self.__CUT_HEIGHT))
 
-    def __min_roate(self, img: Image.Image, base_x, base_y) -> Image.Image:
+    def __min_rotate(self, img: Image.Image, base_x, base_y) -> Image.Image:
         """
-        use to cut one piece in one image file
+        use to rotate one piece in one image file
         :param img: the Image.Image object
         :param base_x: began cut x position
         :param base_y: began cut y position
@@ -60,6 +61,17 @@ class CutImage:
         """
         imge = img.crop((base_x, base_y, base_x + self.__CUT_WIDTH, base_y + self.__CUT_HEIGHT))
         imge = imge.rotate(45)
+        return imge
+    def __min_blur(self, img: Image.Image, base_x, base_y,blur=2) -> Image.Image:
+        """
+        use to rotate one piece in one image file
+        :param img: the Image.Image object
+        :param base_x: began cut x position
+        :param base_y: began cut y position
+        :return: Image.Image
+        """
+        imge = img.crop((base_x, base_y, base_x + self.__CUT_WIDTH, base_y + self.__CUT_HEIGHT))
+        imge = imge.filter(ImageFilter.GaussianBlur(blur))
         return imge
 
     def __no_contain_tuple(self, position_list, x, y):
@@ -147,7 +159,7 @@ class CutImage:
         if random_count > x_range * y_range:
             print("随机裁剪的数量大于图片本身所能容纳的个数")
         else:
-            for i in range(random_count):
+            while len(position_list) < random_count:
                 x = random.randint(0, x_range - 1)
                 y = random.randint(0, y_range - 1)
                 if self.__no_contain_tuple(position_list, x, y):
@@ -155,6 +167,83 @@ class CutImage:
                     new_image = self.__min_cut(img, self.__BASE_X + self.__OVERLAP + self.__CUT_WIDTH * x,
                                                self.__BASE_Y + self.__OVERLAP + self.__CUT_HEIGHT * y)
                     new_label_image = self.__min_cut(label_img, self.__BASE_X + self.__OVERLAP + self.__CUT_WIDTH * x,
+                                                     self.__BASE_Y + self.__OVERLAP + self.__CUT_HEIGHT * y)
+                    new_image.save(self.__create_save_path(image_name, x, y))
+                    new_label_image.save(self.__create_label_save_path(label_name, x, y))
+                    new_image.close()
+                    new_label_image.close()
+            img.close()
+            label_img.close()
+
+
+    def random_rotate(self, image_name, random_count=None):
+        """
+        random choose position to cut in one file
+        :param callback:
+        :param image_name: cut image name
+        :param random_count: random cut piece amount in one file, default is max piece
+        :param base_x: began cut image x position
+        :param base_y: began cut image y position
+        :return: None
+        """
+        assert self.__callback is not None, "没有定义callback函数来完成标签名称的设置"
+        label_name = self.__callback(image_name)
+        img = Image.open(self.__IMAGE_ROOT + image_name)
+        label_img = Image.open(self.__LABEL_ROOT + label_name)
+        y_range = math.floor(img.size[1] / self.__CUT_HEIGHT)
+        x_range = math.floor(img.size[0] / self.__CUT_WIDTH)
+        position_list = []
+        if random_count > x_range * y_range:
+            print("随机裁剪的数量大于图片本身所能容纳的个数")
+        else:
+            if random_count is None:
+                random_count = x_range*y_range
+            while len(position_list) < random_count:
+                x = random.randint(0, x_range - 1)
+                y = random.randint(0, y_range - 1)
+                if self.__no_contain_tuple(position_list, x, y):
+                    position_list.append((x, y))
+                    new_image = self.__min_blur(img, self.__BASE_X + self.__OVERLAP + self.__CUT_WIDTH * x,
+                                               self.__BASE_Y + self.__OVERLAP + self.__CUT_HEIGHT * y)
+                    new_label_image = self.__min_blur(label_img, self.__BASE_X + self.__OVERLAP + self.__CUT_WIDTH * x,
+                                                     self.__BASE_Y + self.__OVERLAP + self.__CUT_HEIGHT * y)
+                    new_image.save(self.__create_save_path(image_name, x, y))
+                    new_label_image.save(self.__create_label_save_path(label_name, x, y))
+                    new_image.close()
+                    new_label_image.close()
+            img.close()
+            label_img.close()
+
+    def random_blur(self, image_name, random_count=None):
+        """
+        random choose position to cut in one file
+        :param callback:
+        :param image_name: blur image name
+        :param random_count: random cut piece amount in one file, default is max piece
+        :param base_x: began cut image x position
+        :param base_y: began cut image y position
+        :return: None
+        """
+        assert self.__callback is not None, "没有定义callback函数来完成标签名称的设置"
+        label_name = self.__callback(image_name)
+        img = Image.open(self.__IMAGE_ROOT + image_name)
+        label_img = Image.open(self.__LABEL_ROOT + label_name)
+        y_range = math.floor(img.size[1] / self.__CUT_HEIGHT)
+        x_range = math.floor(img.size[0] / self.__CUT_WIDTH)
+        position_list = []
+        if random_count > x_range * y_range:
+            print("随机裁剪的数量大于图片本身所能容纳的个数")
+        else:
+            if random_count is None:
+                random_count = x_range*y_range
+            while len(position_list) < random_count:
+                x = random.randint(0, x_range - 1)
+                y = random.randint(0, y_range - 1)
+                if self.__no_contain_tuple(position_list, x, y):
+                    position_list.append((x, y))
+                    new_image = self.__min_blur(img, self.__BASE_X + self.__OVERLAP + self.__CUT_WIDTH * x,
+                                               self.__BASE_Y + self.__OVERLAP + self.__CUT_HEIGHT * y)
+                    new_label_image = self.__min_blur(label_img, self.__BASE_X + self.__OVERLAP + self.__CUT_WIDTH * x,
                                                      self.__BASE_Y + self.__OVERLAP + self.__CUT_HEIGHT * y)
                     new_image.save(self.__create_save_path(image_name, x, y))
                     new_label_image.save(self.__create_label_save_path(label_name, x, y))
@@ -191,4 +280,7 @@ class CutImage:
                     self.random_cut(file, random_count=random_count)
                 if model == Model.ROTATE:
                     assert self.__LABEL_ROOT is not None, "没有设置标签图像的根地址"
-                    self.random_cut(file, random_count=random_count)
+                    self.random_rotate(file, random_count=random_count)
+                if model == Model.BLUR:
+                    assert self.__LABEL_ROOT is not None, "没有设置标签图像的根地址"
+                    self.random_blur(file, random_count=random_count)
