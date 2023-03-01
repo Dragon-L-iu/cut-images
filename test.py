@@ -29,4 +29,5 @@ cutimage.set_label_root(LABEL_ROOT)
 cutimage.set_callback(callback)
 # 调用begin model参数用来控制裁剪方式
 # cutimage.begin(model=Model.CUT, random_count=5)
-cutimage.begin(model=Model.BLUR, random_count=5)
+# cutimage.begin(model=Model.BLUR, random_count=5)
+cutimage.run({Model.RANDOM_CUT: 1, Model.BLUR: 1}, random_count=5)
