@@ -34,7 +34,7 @@ class CutImage:
         if self.__save_path is None:
             assert "Not set image save path"
         if self.__name_callback is not None:
-            return self.__name_callback(image_name, x, y)
+            return os.path.join(self.__save_path, self.__name_callback(image_name, x, y))
         return os.path.join(self.__save_path,
                             image_name.split('.')[0] + "-" + str(y) + str(x) + "." +
                             image_name.split('.')[1])
